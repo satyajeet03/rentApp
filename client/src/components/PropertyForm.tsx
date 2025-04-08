@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -16,12 +16,13 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { PropertyFormData } from '../types';
 import ImageUploader from './ImageUploader';
-
+import DeleteIcon from '@mui/icons-material/Delete';
 interface PropertyFormProps {
   open: boolean;
   onClose: () => void;
@@ -39,6 +40,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
   property,
   
 }) => {
+   
   const formik = useFormik<PropertyFormData>({
     enableReinitialize: true,
     initialValues: {
@@ -72,6 +74,13 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
       onSubmit(values);
     },
   });
+// Handle image preview removal
+ // Handle image removal
+ const handleRemoveImage = (index: number) => {
+  const newImages = [...formik.values.images];
+  newImages.splice(index, 1);
+  formik.setFieldValue('images', newImages);
+};
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
@@ -261,43 +270,66 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
               </FormControl>
             </Grid>
 
-            {/* Image Upload */}
-            <Grid item xs={12}>
+         {/* Image Upload Section */}
+         <Grid item xs={12}>
               <Typography variant="subtitle1" mb={1}>
                 Upload Images
               </Typography>
-              {/* <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  const files = e.target.files;
-                  if (files) {
-                    const newFiles = Array.from(files);
-                    formik.setFieldValue("images", newFiles);
-                  }
-                }}
-              /> */}
-              <ImageUploader
-                value={formik.values.images}
-                onChange={(images) => formik.setFieldValue("images", images)}
-              />
+              
+              <Box sx={{ mb: 2 }}>
+                <ImageUploader
+                  value={formik.values.images}
+                  onChange={(images) => formik.setFieldValue("images", images)}
+                />
+              </Box>
 
-              <Box display="flex" gap={1} mt={2} flexWrap="wrap">
-                {formik.values.images?.map((img: any, idx: number) => (
-                  <img
-                    key={idx}
-                    src={
-                      typeof img === "string" ? img : URL.createObjectURL(img)
-                    }
-                    alt={`property-img-${idx}`}
-                    width={100}
-                    height={100}
-                    style={{ objectFit: "cover", borderRadius: 8 }}
-                  />
+              {/* Image Previews */}
+              <Box sx={{ 
+                display: 'flex', 
+                flexWrap: 'wrap', 
+                gap: 2 
+              }}>
+                {formik.values.images.map((image:any, index:any) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      position: 'relative',
+                      width: 150,
+                      height: 150,
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <img
+                      src={typeof image === 'string' ? image : URL.createObjectURL(image)}
+                      alt={`Property ${index + 1}`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                    <IconButton
+                      size="small"
+                      onClick={() => handleRemoveImage(index)}
+                      sx={{
+                        position: 'absolute',
+                        top: 4,
+                        right: 4,
+                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        },
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 ))}
               </Box>
             </Grid>
+
+
           </Grid>
 
           {/* Actions */}

@@ -93,8 +93,16 @@ export const propertyApi = {
     const response = await api.get<Property[]>('/properties/my-properties');
     return response.data;
   },
- uploadImages: async (formData: FormData) => {
-  const response = await api.post<Property>('/upload-images', formData);
-    return response.data;
-  },
+//  uploadImages: async (formData: FormData) => {
+//   const response = await api.post<Property>('/upload-images', formData);
+//     return response.data;
+//   },
+uploadImages: async (formData: FormData) => {
+  const response = await api.post('/upload-images', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data', // optional, axios can detect this
+    },
+  });
+  return response.data;
+},
 }; 
