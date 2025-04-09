@@ -99,10 +99,16 @@ export const OwnerDashboard: React.FC = () => {
     });
     const handleSubmit = async (propertyData: any) => {
       console.log("Form Submitted in OwnerDashboard:", propertyData);
-    
+    // Extract only the image URLs from the images array
+  const imageUrls = propertyData.images.map((image: string | File) => {
+    // If the image is already a string (URL), return it
+    // If it's a File object, it should have already been uploaded and replaced with a URL
+    return typeof image === 'string' ? image : null;
+  }).filter(Boolean); // Remove any null values
+
       const completeData = {
         ...propertyData,
-        images: propertyData.images,
+        images: imageUrls,
         amenities: propertyData.amenities || [],
       };
   

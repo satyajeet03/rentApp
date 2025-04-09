@@ -25,7 +25,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange }) => {
     onSuccess: (res) => {
       enqueueSnackbar('Images uploaded successfully!', { variant: 'success' });
       if (Array.isArray(res?.urls)) {
-        onChange([...value, ...res.urls]);
+        // Replace the File objects with the uploaded URLs
+        const newImages = value.map(img => 
+          typeof img === 'string' ? img : null
+        ).filter(Boolean);
+        console.log(newImages)
+        onChange([...newImages, ...res.urls]);
       }
       queryClient.invalidateQueries({ queryKey: ['upload-images'] });
     },
