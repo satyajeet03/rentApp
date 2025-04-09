@@ -94,12 +94,8 @@ export const MyProperties: React.FC = () => {
    
   const handleSubmit = (propertyData: PropertyFormData) => {
     console.log("Form Submitted:", propertyData); 
-    const imageUrls = propertyData.images.map((image: string | File) => {
-      // If the image is already a string (URL), return it
-      // If it's a File object, it should have already been uploaded and replaced with a URL
-      return typeof image === 'string' ? image : null;
-    }).filter(Boolean); // Remove any null values
-  // ✅ Should log when you click submit
+    const imageUrls = propertyData.images.filter((img:any): img is string => typeof img === 'string');
+    console.log(imageUrls)
     const completeData = {
       ...propertyData,
       images: imageUrls || [],

@@ -69,7 +69,10 @@ export const propertyApi = {
   },
 
   create: async (data: Omit<Property, '_id' | 'owner' | 'createdAt' | 'updatedAt'>) => {
-    const response = await api.post<Property>('/properties/createProperties', data);
+    const response = await api.post<Property>('/properties/createProperties', {
+      ...data,
+      images: data.images, // These should now be only URLs
+    });
     return response.data;
   },
 

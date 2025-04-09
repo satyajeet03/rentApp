@@ -8,9 +8,10 @@ import { Button, CircularProgress } from '@mui/material';
 interface ImageUploaderProps {
   value: (string | File)[];
   onChange: (images: (string | File)[]) => void;
+  onUploadStatusChange: (isUploading: boolean) => void;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange,onUploadStatusChange  }) => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -22,17 +23,25 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange }) => {
       });
       return propertyApi.uploadImages(formData);
     },
+    onMutate: () => {
+      setIsLoading(true);
+      onUploadStatusChange(true);
+    },
     onSuccess: (res) => {
-      enqueueSnackbar('Images uploaded successfully!', { variant: 'success' });
+      console.log(res?.urls)
       if (Array.isArray(res?.urls)) {
-        // Replace the File objects with the uploaded URLs
-        const newImages = value.map(img => 
-          typeof img === 'string' ? img : null
-        ).filter(Boolean);
-        console.log(newImages)
-        onChange([...newImages, ...res.urls]);
+        // Only keep existing URLs and add new ones
+        const existingUrls = value.filter((img): img is string => typeof img === 'string');
+        onChange([...existingUrls, ...res.urls]);
       }
+      onUploadStatusChange(false);
+      enqueueSnackbar('Images uploaded successfully!', { variant: 'success' });
       queryClient.invalidateQueries({ queryKey: ['upload-images'] });
+    },
+    onSettled: () => {
+      setIsLoading(false);
+      onUploadStatusChange(false);
+      if (inputRef.current) inputRef.current.value = '';
     },
     onError: (error) => {
       console.error('Upload error:', error);

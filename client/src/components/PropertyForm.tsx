@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -40,9 +40,10 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
   property,
   
 }) => {
-   
+  const [isUploading, setIsUploading] = useState(false);
   const formik = useFormik<PropertyFormData>({
     enableReinitialize: true,
+    validateOnMount: true,
     initialValues: {
       title: property?.title || '',
       description: property?.description || '',
@@ -55,7 +56,7 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
         zipCode: property?.address?.zipCode || '',
         country: property?.address?.country || 'India',
       },
-      images: property?.images || [] as (File | string)[],
+      images: property?.images || [],
       amenities: property?.amenities || [],
       bedrooms: property?.bedrooms || 0,
       bathrooms: property?.bathrooms || 0,
@@ -63,25 +64,35 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
       available: property?.available ?? true,
     },
     validationSchema: Yup.object({
-      title: Yup.string().required('Required'),
-      description: Yup.string().required('Required'),
-      price: Yup.number().required('Required').min(0),
-      bedrooms: Yup.number().required('Required').min(0),
-      bathrooms: Yup.number().required('Required').min(0),
-      area: Yup.number().required('Required').min(0),
+      title: Yup.string().required('Title is required'),
+      description: Yup.string().required('Description is required'),
+      price: Yup.number().required('Price is required').min(0),
+      bedrooms: Yup.number().required('Bedrooms are required').min(0),
+      bathrooms: Yup.number().required('Bathrooms are required').min(0),
+      area: Yup.number().required('Area is required').min(0),
+      address: Yup.object({
+        street: Yup.string().required('Street is required'),
+        city: Yup.string().required('City is required'),
+        state: Yup.string().required('State is required'),
+        zipCode: Yup.string().required('Zip Code is required'),
+        country: Yup.string().required('Country is required'),
+      }),
+      images: Yup.array()
+      .of(Yup.mixed().required())
+      .min(1, 'At least one image is required'),
     }),
     onSubmit: (values) => {
       onSubmit(values);
     },
   });
-// Handle image preview removal
- // Handle image removal
- const handleRemoveImage = (index: number) => {
-  const newImages = [...formik.values.images];
-  newImages.splice(index, 1);
-  formik.setFieldValue('images', newImages);
-};
-
+  const handleUploadStatusChange = (uploading: boolean) => {
+    setIsUploading(uploading);
+  };
+  useEffect(() => {
+    console.log("isValid:", formik.isValid);
+    console.log("errors:", formik.errors);
+    console.log("values:", isUploading);
+  }, [formik.isValid, formik.errors, formik.values]);
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{property ? "Edit Property" : "Add Property"}</DialogTitle>
@@ -279,7 +290,8 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
               <Box sx={{ mb: 2 }}>
                 <ImageUploader
                   value={formik.values.images}
-                  onChange={(images) => formik.setFieldValue("images", images)}
+                  onChange={(newImages) => formik.setFieldValue('images', newImages)}
+                  onUploadStatusChange={handleUploadStatusChange}
                 />
               </Box>
 
@@ -311,7 +323,11 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
                     />
                     <IconButton
                       size="small"
-                      onClick={() => handleRemoveImage(index)}
+                      onClick={() => {
+                        const updatedImages = [...formik.values.images];
+                        updatedImages.splice(index, 1);
+                        formik.setFieldValue('images', updatedImages);
+                      }}
                       sx={{
                         position: 'absolute',
                         top: 4,
@@ -337,7 +353,9 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
             <Button onClick={onClose} color="secondary">
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
+            <Button type="submit" variant="contained"
+            disabled={!formik.isValid || isUploading}
+            >
               {property ? "Update" : "Create"}
             </Button>
           </DialogActions>

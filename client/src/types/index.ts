@@ -20,7 +20,7 @@ export interface Property {
     zipCode: string;
     country: string;
   };
-  images: any;
+  images: string[];
   amenities: string[];
   bedrooms?: any;
   bathrooms?: any;
@@ -43,7 +43,7 @@ export interface PropertyFormData {
     zipCode: string;
     country: string;
   };
-  images: any;
+  images: (string | File)[];
   amenities: any;
   bedrooms?: any;
   bathrooms?: any;
