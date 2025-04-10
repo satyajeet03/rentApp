@@ -69,13 +69,21 @@ export interface ApiError {
 }
 
 export interface PropertyFilters {
-  type?: string;
+  type: string;
   minPrice?: number;
   maxPrice?: number;
   city?: string;
   state?: string;
   available?: boolean;
-  page?: number;
-  limit?: number;
-  search?: string;
-} 
+  page: number;
+  limit: number;
+  search?: string,
+}
+// types.ts
+export interface Interest {
+  _id: string;
+  user: string;
+  property: Property;
+  status: 'interested' | 'visit_requested';
+  createdAt: string;
+}

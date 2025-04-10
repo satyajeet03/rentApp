@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { QueryClient } from '@tanstack/react-query';
-import { Property, PropertyResponse } from '../types';
+import { Interest, Property, PropertyResponse } from '../types';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
@@ -59,8 +59,8 @@ export const propertyApi = {
   },
 
   getById: async (id: string) => {
-    const response = await api.get<Property>(`/properties/${id}`);
-    return response.data;
+    const res = await api.get<Property>(`/properties/${id}`);
+    return res.data;
   },
 
   getOwnerProperties: async () => {
@@ -109,3 +109,46 @@ uploadImages: async (formData: FormData) => {
   return response.data;
 },
 }; 
+
+export const interestApi = {
+  addInterest: async (propertyId: string) => {
+    const res = await api.post('/interests/add', { propertyId });
+    return res.data;
+  },
+
+  removeInterest: async (propertyId: string) => {
+    // Make sure we're sending propertyId in the request body
+    const res = await api.delete('/interests/remove', { 
+      data: { propertyId } // Use 'data' for DELETE request body
+    });
+    // or if you want to keep using POST
+    // const res = await api.post('/interests/remove', { propertyId });
+    return res.data;
+  },
+  checkInterest: async (propertyId: string): Promise<{ interested: boolean }> => {
+    const res = await api.get(`/interests/check/${propertyId}`);
+    return res.data;
+  },
+  toggleInterest: async ({
+    propertyId,
+    interested,
+  }: {
+    propertyId: string;
+    interested: boolean;
+  }): Promise<Interest | { success: boolean }> => {
+    return interested
+      ? interestApi.addInterest(propertyId)
+      : interestApi.removeInterest(propertyId);
+  },
+
+  getMyInterests: async (): Promise<Interest[]> => {
+    const res = await api.get('/interests/my');
+    return res.data;
+  },
+
+  requestVisit: async (interestId: string): Promise<Interest> => {
+    const res = await api.post('/interests/request-visit', { interestId });
+    return res.data;
+  },
+ 
+};

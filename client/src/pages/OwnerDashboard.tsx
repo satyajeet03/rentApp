@@ -147,19 +147,14 @@ export const OwnerDashboard: React.FC = () => {
 
   return (
     <Container>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">My Properties</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpen}>
-          Add Property
-        </Button>
-      </Box>
+     
 
       {properties.length === 0 ? (
         <Alert severity="info" sx={{ mt: 2 }}>
           You haven't added any properties yet.
         </Alert>
       ) : (
-        <Grid container spacing={3}>
+        <Grid sx={{marginTop:"20px"}} container spacing={3}>
           {properties.map((property: Property) => (
             <Grid item xs={12} sm={6} md={4} key={property._id}>
               <Box sx={{ position: 'relative' }}>
@@ -177,7 +172,27 @@ export const OwnerDashboard: React.FC = () => {
           ))}
         </Grid>
       )}
-
+<IconButton
+  onClick={handleOpen}
+  sx={{
+    position: 'fixed',
+    bottom: 30,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    bgcolor: 'primary.main',
+    color: 'white',
+    '&:hover': {
+      bgcolor: 'primary.dark',
+    },
+    width: 60,
+    height: 60,
+    borderRadius: '50%',
+    boxShadow: 3,
+    zIndex: 1000,
+  }}
+>
+  <AddIcon sx={{ fontSize: 30 }} />
+</IconButton>
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <PropertyForm
         open={open}

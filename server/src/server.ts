@@ -28,6 +28,7 @@ app.use('/properties', propertyRoutes);
 import multer from 'multer';
 import { uploadImagesToCloudinary } from './utils/uploadImages';
 import { auth, AuthRequest } from './middleware/auth';
+import interestRoutes from './routes/interestRoutes';
 // Multer configuration
 const storage = multer.memoryStorage();
 const upload = multer({ 
@@ -46,17 +47,8 @@ const upload = multer({
 });
 // const upload = multer({ dest: 'uploads/' }); // you can use diskStorage if needed
 const router = express.Router();
-
-// app.post('/upload-images', auth, upload.array('images'), async (req: AuthRequest, res: Response, next: NextFunction) => {
-//   try {
-//     const urls = await uploadImagesToCloudinary(req.files as Express.Multer.File[],req.user?.id || "opopo");
-//     console.log(req.files,"filesssss")
-//     res.json({ urls });
-//   } catch (error) {
-//     console.log("Error while uploading files", error)
-//     res.status(500).json({ message: 'Image upload failed', error });
-//   }
-// });
+app.use('/interests', interestRoutes);
+ 
 
 // server.ts
 app.post('/upload-images', auth, upload.array('images'), async (req: AuthRequest, res: Response, next: NextFunction) => {

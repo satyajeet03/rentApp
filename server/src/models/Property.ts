@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IProperty extends Document {
   title: string;
   description: string;
-  type: 'apartment' | 'house' | 'room' | 'commercial';
+  type: 'flats' | 'house' | 'pg' | 'commercial';
   price: number;
   address: {
     street: string;
@@ -36,7 +36,7 @@ const propertySchema = new Schema<IProperty>(
     },
     type: {
       type: String,
-      enum: ['apartment', 'house', 'room', 'commercial'],
+      enum: ['flats', 'house', 'pg', 'commercial'],
       required: [true, 'Please specify property type'],
     },
     price: {

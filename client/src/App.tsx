@@ -8,6 +8,8 @@ import Register from './pages/Register';
 import { Properties } from './pages/Properties';
 import { OwnerDashboard } from './pages/OwnerDashboard';
 import { AuthProvider } from './contexts/AuthContext';
+import PropertyDetails from './pages/PropertyDetails';
+import { SnackbarProvider } from 'notistack';
 
 // Create theme
 const theme = createTheme({
@@ -33,7 +35,16 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <SnackbarProvider
+    maxSnack={3}
+    autoHideDuration={3000}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    preventDuplicate
+  >
+     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
@@ -46,11 +57,14 @@ function App() {
               <Route path="/properties" element={<Properties />} />
               <Route path="/my-properties" element={<OwnerDashboard />} />
               <Route path="/owner-dashboard" element={<Navigate to="/my-properties" replace />} />
+              <Route path="/property/:id" element={<PropertyDetails />} />
             </Routes>
           </Router>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+     </SnackbarProvider>
+   
   );
 }
 

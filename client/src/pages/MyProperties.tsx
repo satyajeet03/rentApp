@@ -139,17 +139,6 @@ export const MyProperties: React.FC = () => {
 
   return (
     <Container>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">My Properties</Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpen}
-        >
-          Add Property
-        </Button>
-      </Box>
-
       {properties?.length === 0 ? (
         <Alert severity="info" sx={{ mt: 2 }}>
           You haven't added any properties yet. Click the "Add Property" button to get started.
@@ -190,7 +179,11 @@ export const MyProperties: React.FC = () => {
               </Paper>
             </Grid>
           ))}
+
+
+
         </Grid>
+        
       )}
 
       <PropertyForm

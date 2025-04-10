@@ -145,10 +145,10 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
                   label="Type"
                   onChange={formik.handleChange}
                 >
-                  <MenuItem value="apartment">Apartment</MenuItem>
+                  <MenuItem value="flats">Flats</MenuItem>
                   <MenuItem value="house">House</MenuItem>
-                  <MenuItem value="villa">Villa</MenuItem>
-                  <MenuItem value="condo">Condo</MenuItem>
+                  <MenuItem value="pg">PG</MenuItem>
+                  <MenuItem value="commercial">Commercial</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -280,7 +280,6 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
                 </FormGroup>
               </FormControl>
             </Grid>
-
          {/* Image Upload Section */}
          <Grid item xs={12}>
               <Typography variant="subtitle1" mb={1}>

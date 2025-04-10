@@ -61,6 +61,29 @@ export const getAllProperties = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+// Search properties
+export const searchProperties = async (req: Request, res: Response) => {
+  try {
+    const { query } = req.query;
+
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    const properties = await Property.find(
+      { $text: { $search: query } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' } })
+      .populate('owner', 'name email phone');
+
+    res.json(properties);
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 // Get properties by owner
 export const getOwnerProperties = async (req: AuthRequest, res: Response) => {
@@ -74,21 +97,21 @@ export const getOwnerProperties = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Get single property
-export const getPropertyById = async (req: Request, res: Response) => {
-  try {
-    const property = await Property.findById(req.params.id)
-      .populate('owner', 'name email phone');
+// // Get single property
+// export const getPropertyById = async (req: Request, res: Response) => {
+//   try {
+//     const property = await Property.findById(req.params.id)
+//       .populate('owner', 'name email phone');
     
-    if (!property) {
-      return res.status(404).json({ message: 'Property not found' });
-    }
+//     if (!property) {
+//       return res.status(404).json({ message: 'Property not found' });
+//     }
     
-    res.json(property);
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
+//     res.json(property);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
 // Create property (for owners)
 export const createProperty = async (req: AuthRequest, res: Response) => {
@@ -163,24 +186,20 @@ export const deleteProperty = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Search properties
-export const searchProperties = async (req: Request, res: Response) => {
+ // GET /api/properties/:id
+export const getPropertyById = async (req: Request, res: Response) => {
   try {
-    const { query } = req.query;
-    
-    if (!query) {
-      return res.status(400).json({ message: 'Search query is required' });
+    const propertyId = req.params.id;
+
+    const property = await Property.findById(propertyId).populate('owner', 'name email');
+
+    if (!property) {
+      return res.status(404).json({ message: 'Property not found' });
     }
 
-    const properties = await Property.find(
-      { $text: { $search: query as string } },
-      { score: { $meta: 'textScore' } }
-    )
-      .sort({ score: { $meta: 'textScore' } })
-      .populate('owner', 'name email phone');
-
-    res.json(properties);
+    res.status(200).json(property);
   } catch (error) {
+    console.error('Error fetching property:', error);
     res.status(500).json({ message: 'Server error' });
   }
-}; 
+};
