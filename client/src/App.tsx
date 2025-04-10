@@ -10,6 +10,8 @@ import { OwnerDashboard } from './pages/OwnerDashboard';
 import { AuthProvider } from './contexts/AuthContext';
 import PropertyDetails from './pages/PropertyDetails';
 import { SnackbarProvider } from 'notistack';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 // Create theme
 const theme = createTheme({
@@ -35,7 +37,8 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <SnackbarProvider
+    <Provider store={store}>
+      <SnackbarProvider
     maxSnack={3}
     autoHideDuration={3000}
     anchorOrigin={{
@@ -64,6 +67,7 @@ function App() {
       </ThemeProvider>
     </QueryClientProvider>
      </SnackbarProvider>
+    </Provider>
    
   );
 }
