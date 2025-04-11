@@ -88,6 +88,40 @@ export const PropertyForm: React.FC<PropertyFormProps> = ({
   const handleUploadStatusChange = (uploading: boolean) => {
     setIsUploading(uploading);
   };
+  const fetchAddressFromGeoapify = async (lat: number, lon: number) => {
+    try {
+      const apiKey = '2c2cb995c8da49bda58ed6d3d83ec444'; // replace with your key
+      const response = await fetch(
+        `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${apiKey}`
+      );
+      const data = await response.json();
+      const address = data.features[0]?.properties;
+  
+      if (address) {
+        formik.setFieldValue('address.street', address.street || '');
+        formik.setFieldValue('address.city', address.city || '');
+        formik.setFieldValue('address.state', address.state || '');
+        formik.setFieldValue('address.zipCode', address.postcode || '');
+        formik.setFieldValue('address.country', address.country || '');
+      }
+    } catch (error) {
+      console.error('Failed to fetch address:', error);
+    }
+  };
+  useEffect(() => {
+    if (!property) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          fetchAddressFromGeoapify(latitude, longitude);
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
+  }, []);
+  
   useEffect(() => {
     console.log("isValid:", formik.isValid);
     console.log("errors:", formik.errors);

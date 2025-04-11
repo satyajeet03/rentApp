@@ -70,7 +70,16 @@ const PropertyDetails: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isTenant = user?.role === 'tenant';
-
+  const generateGoogleMapsLink = (address: {
+    street: string;
+    city: string;
+    state: string;
+    country: string;
+  }) => {
+    const query = `${address.street}, ${address.city}, ${address.state}, ${address.country}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  };
+  
   const {
     data: property,
     isLoading,
@@ -236,7 +245,15 @@ const PropertyDetails: React.FC = () => {
 
           <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.default', mb: 3 }}>
             <Stack direction="row" alignItems="center" spacing={1}>
-              <LocationOnIcon color="primary" />
+            <IconButton
+    onClick={() =>
+      window.open(generateGoogleMapsLink(property.address), '_blank')
+    }
+    color="primary"
+    aria-label="View on map"
+  >
+    <LocationOnIcon />
+  </IconButton>
               <Typography variant="body1" color="text.secondary">
                 {capitalizeText(`${property.address.street}, ${property.address.city}, ${property.address.state}, ${property.address.zipCode}, ${property.address.country}`)}
               </Typography>
